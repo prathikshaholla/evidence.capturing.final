@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency SOS System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: white;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      color: #ff6b6b;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    button {
+      width: 100%;
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 15px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background: #ff1a1a;
+      transform: translateY(-2px);
+    }
+    button:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-success {
+      background: #51cf66;
+    }
+    .btn-success:hover {
+      background: #37b24d;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 14px;
+      margin-bottom: 10px;
+      font-family: inherit;
+    }
+    input::placeholder, textarea::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    #status {
+      text-align: center;
+      padding: 15px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .contacts-list {
+      margin-top: 15px;
+    }
+    .contact-item {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .contact-info {
+      flex: 1;
+    }
+    .contact-name {
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+    .contact-phone {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .btn-remove {
+      background: #ff6b6b;
+      padding: 8px 15px;
+      font-size: 13px;
+      width: auto;
+      margin: 0;
+    }
+    .btn-remove:hover {
+      background: #ff5252;
+    }
+    
+    /* Countdown Modal - Ultra Prominent */
+    .countdown-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .countdown-modal.active {
+      display: flex;
+    }
+    .countdown-content {
+      text-align: center;
+      padding: 60px 50px;
+      background: linear-gradient(135deg, #ff0000 0%, #ff5252 100%);
+      border-radius: 30px;
+      max-width: 400px;
+      width: 90%;
+      animation: pulse 0.8s infinite;
+      box-shadow: 0 0 100px rgba(255, 0, 0, 0.8), inset 0 0 50px rgba(0, 0, 0, 0.2);
+      border: 4px solid rgba(255, 255, 255, 0.3);
+    }
+    .countdown-number {
+      font-size: 180px;
+      font-weight: 900;
+      line-height: 1;
+      margin: 30px 0;
+      text-shadow: 0 0 40px rgba(255, 255, 255, 0.8), 0 0 80px rgba(255, 0, 0, 1);
+      animation: numberPulse 1s infinite;
+      color: white;
+      letter-spacing: -5px;
+    }
+    .countdown-text {
+      font-size: 28px;
+      margin-bottom: 40px;
+      font-weight: 800;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      letter-spacing: 2px;
+    }
+    .btn-cancel {
+      background: white;
+      color: #ff0000;
+      font-size: 22px;
+      padding: 25px 50px;
+      font-weight: 900;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      border: 3px solid rgba(255, 255, 255, 0.5);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .btn-cancel:hover {
+      background: #f0f0f0;
+      color: #ff0000;
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    @keyframes numberPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.9; }
+    }
+    .hidden {
+      display: none;
+    }
+    .profile-status {
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 13px;
+      margin-top: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚨 Emergency SOS System</h1>
+    
+    <div class="card">
+      <h2 style="margin-bottom: 15px; font-size: 20px;">👤 My Profile</h2>
+      <input type="text" id="userName" placeholder="Your Full Name*">
+      <input type="text" id="userBloodType" placeholder="Blood Type (Optional)">
+      <textarea id="userMedicalInfo" placeholder="Medical conditions, allergies... (Optional)"></textarea>
+      <textarea id="userEmergencyNote" placeholder="Emergency note for responders (Optional)"></textarea>
+      <button id="saveProfile" class="btn-success">Save Profile</button>
+      <div class="profile-status" id="profileStatus">⚠️ Profile not configured</div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom: 15px; font-size: 20px;">📞 Emergency Contacts</h2>
+      <input type="text" id="contactName" placeholder="Contact Name (e.g., Mom, Dad)">
+      <input type="tel" id="contactPhone" placeholder="Phone Number (+919876543210)">
+      <button id="addContact" class="btn-success">Add Emergency Contact</button>
+      <div class="contacts-list" id="contactsList"></div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom: 15px; font-size: 20px;">📱 Motion Detection</h2>
+      <button id="sendSOS">Send SOS Manually</button>
+      <div id="status">🔄 Initializing shake detection...</div>
+    </div>
+  </div>
+
+  <!-- Countdown Modal -->
+  <div class="countdown-modal" id="countdownModal">
+    <div class="countdown-content">
+      <div class="countdown-text">🚨 SOS ALERT IN</div>
+      <div class="countdown-number" id="countdownNumber">3</div>
+      <button class="btn-cancel" id="cancelSOS">CANCEL SOS</button>
+    </div>
+  </div>
+
+  <!-- WhatsApp Fallback Manual Links Modal -->
+  <div class="countdown-modal hidden" id="whatsappLinksModal">
+    <div class="countdown-content">
+      <div class="countdown-text" style="margin-bottom:10px;">❗ If tabs didn’t open,<br>tap/click each contact below to send manually:</div>
+      <div id="whatsappLinksList"></div>
+      <button class="btn-cancel" id="closeLinksModal" style="margin-top:25px;">CLOSE</button>
+    </div>
+  </div>
+
+  <script type="module" src="./shake.js"></script>
+  <script type="module" src="./sos.js"></script>
+</body>
+</html>

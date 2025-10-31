@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shake SOS WhatsApp</title>
+  <script type="module" defer src="shake.js"></script>
+  <script type="module" defer src="sos.js"></script>
+  <script type="module" defer src="contacts-config.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: white;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      color: #ff6b6b;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    button {
+      width: 100%;
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 15px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background: #ff1a1a;
+      transform: translateY(-2px);
+    }
+    button:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-success {
+      background: #51cf66;
+    }
+    .btn-success:hover {
+      background: #37b24d;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    #status {
+      text-align: center;
+      padding: 15px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .contacts-list {
+      margin-top: 15px;
+    }
+    .contact-item {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .contact-info {
+      flex: 1;
+    }
+    .contact-name {
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+    .contact-phone {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .btn-remove {
+      background: #ff6b6b;
+      padding: 8px 15px;
+      font-size: 13px;
+      width: auto;
+      margin: 0;
+    }
+    .btn-remove:hover {
+      background: #ff5252;
+    }
+    
+    /* Countdown Modal */
+    .countdown-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .countdown-modal.active {
+      display: flex;
+    }
+    .countdown-content {
+      text-align: center;
+      padding: 40px;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+      border-radius: 20px;
+      max-width: 350px;
+      animation: pulse 1s infinite;
+    }
+    .countdown-number {
+      font-size: 120px;
+      font-weight: bold;
+      line-height: 1;
+      margin: 20px 0;
+      text-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+    .countdown-text {
+      font-size: 20px;
+      margin-bottom: 30px;
+      font-weight: 600;
+    }
+    .btn-cancel {
+      background: white;
+      color: #ff5252;
+      font-size: 18px;
+      padding: 18px 40px;
+      font-weight: bold;
+      border-radius: 12px;
+    }
+    .btn-cancel:hover {
+      background: #f0f0f0;
+      color: #ff1a1a;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚨 WhatsApp SOS System</h1>
+    
+    <div class="card">
+      <h2 style="margin-bottom: 15px; font-size: 20px;">📱 Motion Detection</h2>
+      <button id="enableMotion" class="btn-success">Enable Shake Detection</button>
+      <button id="sendSOS">Send SOS Manually</button>
+      <div id="status">Waiting for motion access...</div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom: 15px; font-size: 20px;">👥 Emergency Contacts</h2>
+      <input type="text" id="contactName" placeholder="Contact Name (e.g., Mom, Dad)">
+      <input type="tel" id="contactPhone" placeholder="Phone Number (with country code: +919876543210)">
+      <button id="addContact" class="btn-success">Add Contact</button>
+      <div class="contacts-list" id="contactsList"></div>
+      <button onclick="window.resetToDefaultContacts()" style="background: #868e96; margin-top: 15px; font-size: 14px;">Reset to Default Contacts</button>
+    </div>
+  </div>
+
+  <!-- Countdown Modal -->
+  <div class="countdown-modal" id="countdownModal">
+    <div class="countdown-content">
+      <div class="countdown-text">🚨 SOS ALERT IN</div>
+      <div class="countdown-number" id="countdownNumber">3</div>
+      <button class="btn-cancel" id="cancelSOS">CANCEL SOS</button>
+    </div>
+  </div>
+</body>
+</html>
